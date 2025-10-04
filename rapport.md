@@ -1,10 +1,6 @@
 # Rapport d'Amélioration de la Couverture de Mutation avec PiTest
 ## Analyse et Optimisation de la Classe LandmarkStorage
 
-### Auteur: Assistant IA Claude
-### Date: 28 septembre 2025
-### Contexte: Projet GraphHopper Core - Tests de Mutation avec PiTest
-
 ---
 
 ## 1. Introduction
