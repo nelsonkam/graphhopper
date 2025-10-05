@@ -6,8 +6,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CHStorageTest {
 
@@ -83,5 +82,45 @@ class CHStorageTest {
         access.setInt(0, nodeA << 1 | 1 & PrepareEncoder.getScFwdDir());
         assertTrue(access.getInt(0) < 0);
         assertEquals(Integer.MAX_VALUE, access.getInt(0) >>> 1);
+    }
+
+
+    @Test
+    public void testCreateWithNegativeNodes() {
+        RAMDirectory dir = new RAMDirectory();
+        CHStorage store = new CHStorage(dir, "ch1", -1, false);
+        Exception e = assertThrows(
+                IllegalStateException.class,
+                () -> store.create(-30, 5)
+        );
+        assertEquals("CHStorage must be created with a positive number of nodes", e.getMessage());
+    }
+
+    @Test
+    public void testUniqueCreation() {
+        RAMDirectory dir = new RAMDirectory();
+        CHStorage store = new CHStorage(dir, "ch1", -1, false);
+        store.create(30, 5);
+        Exception e = assertThrows(
+                IllegalStateException.class,
+                () -> store.create(20, 5)
+        );
+        assertEquals("CHStorage can only be created once", e.getMessage());
+    }
+
+    @Test
+    public void testLimitValuesWeightFromDouble() {
+        RAMDirectory dir = new RAMDirectory();
+        CHStorage store = new CHStorage(dir, "ch1", -1, false);
+        int numShortcutsExceedingWeight = store.getNumShortcutsExceedingWeight();
+
+        Exception e = assertThrows(
+                IllegalArgumentException.class,
+                () -> store.publicWeightFromDouble(-1)
+        );
+        assertEquals("weight cannot be negative but was -1.0", e.getMessage());
+        assertEquals(1, store.publicWeightFromDouble(0.000001));
+        assertEquals(-2, store.publicWeightFromDouble(Double.POSITIVE_INFINITY));
+        assertEquals(numShortcutsExceedingWeight + 1, store.getNumShortcutsExceedingWeight());
     }
 }

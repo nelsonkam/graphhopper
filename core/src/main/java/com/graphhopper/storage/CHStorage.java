@@ -411,6 +411,10 @@ public class CHStorage {
             return (int) Math.round(weight * WEIGHT_FACTOR);
     }
 
+    public int publicWeightFromDouble(double weight) {
+        return weightFromDouble(weight);
+    }
+
     private double weightToDouble(int intWeight) {
         // If the value is too large (> Integer.MAX_VALUE) the `int` is negative. Converted to `long` the JVM fills the
         // high bits with 1's which we remove via "& 0xFFFFFFFFL" to get the unsigned value. (The L is necessary or prepend 8 zeros.)
