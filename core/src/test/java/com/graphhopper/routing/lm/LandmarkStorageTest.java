@@ -68,8 +68,8 @@ public class LandmarkStorageTest {
     public void testInfiniteWeight() {
         Directory dir = new RAMDirectory();
         graph.edge(0, 1);
-        LandmarkStorage lms = new LandmarkStorage(graph, encodingManager, dir, new LMConfig("car", new SpeedWeighting(speedEnc)), 8).
-                setMaximumWeight(LandmarkStorage.PRECISION);
+        LandmarkStorage lms = new LandmarkStorage(graph, encodingManager, dir,
+                new LMConfig("car", new SpeedWeighting(speedEnc)), 8).setMaximumWeight(LandmarkStorage.PRECISION);
         lms.createLandmarks();
 
         // default is infinity but return short max
@@ -86,7 +86,8 @@ public class LandmarkStorageTest {
         assertFalse(lms.isInfinity(0));
         assertEquals(LandmarkStorage.SHORT_MAX, lms.getFromWeight(0, 0));
 
-        // If bigger than integer max throw exception. Could this happen if weights add up too much?
+        // If bigger than integer max throw exception. Could this happen if weights add
+        // up too much?
         assertThrows(UnsupportedOperationException.class, () -> lms.setWeight(0, (double) Integer.MAX_VALUE + 1));
     }
 
@@ -95,8 +96,7 @@ public class LandmarkStorageTest {
         graph.edge(0, 1).set(speedEnc, 60, 60).setDistance(40.1);
         Directory dir = new RAMDirectory();
         LandmarkStorage lms = new LandmarkStorage(graph, encodingManager, dir,
-                new LMConfig("c1", new SpeedWeighting(speedEnc)), 4).
-                setMaximumWeight(LandmarkStorage.PRECISION);
+                new LMConfig("c1", new SpeedWeighting(speedEnc)), 4).setMaximumWeight(LandmarkStorage.PRECISION);
         lms._getInternalDA().create(2000);
         // 2^16=65536, use -1 for infinity and -2 for maximum
         lms.setWeight(0, 65536);
@@ -122,7 +122,8 @@ public class LandmarkStorageTest {
         // 1 means => 2 allowed edge keys => excludes the node 6
         subnetworkRemoval(weighting, 1);
 
-        LandmarkStorage storage = new LandmarkStorage(graph, encodingManager, new RAMDirectory(), new LMConfig("car", weighting), 2);
+        LandmarkStorage storage = new LandmarkStorage(graph, encodingManager, new RAMDirectory(),
+                new LMConfig("car", weighting), 2);
         storage.setMinimumNodes(2);
         storage.createLandmarks();
         assertEquals(3, storage.getSubnetworksWithLandmarks());
@@ -142,10 +143,12 @@ public class LandmarkStorageTest {
 
         Weighting weighting = new SpeedWeighting(speedEnc);
 
-        // 3 nodes => 6 allowed edge keys but still do not exclude 3 & 4 as strongly connected and not a too small subnetwork!
+        // 3 nodes => 6 allowed edge keys but still do not exclude 3 & 4 as strongly
+        // connected and not a too small subnetwork!
         subnetworkRemoval(weighting, 4);
 
-        LandmarkStorage storage = new LandmarkStorage(graph, encodingManager, new RAMDirectory(), new LMConfig("car", weighting), 2);
+        LandmarkStorage storage = new LandmarkStorage(graph, encodingManager, new RAMDirectory(),
+                new LMConfig("car", weighting), 2);
         storage.setMinimumNodes(3);
         storage.createLandmarks();
         assertEquals(2, storage.getSubnetworksWithLandmarks());
@@ -154,10 +157,11 @@ public class LandmarkStorageTest {
 
     private void subnetworkRemoval(Weighting weighting, int minNodeSize) {
         // currently we rely on subnetwork removal in Landmark preparation, see #2256
-        // PrepareRoutingSubnetworks removes OSM bugs regarding turn restriction mapping which the node-based Tarjan in Landmark preparation can't
-        new PrepareRoutingSubnetworks(graph, Collections.singletonList(new PrepareRoutingSubnetworks.PrepareJob(subnetworkEnc, weighting))).
-                setMinNetworkSize(minNodeSize).
-                doWork();
+        // PrepareRoutingSubnetworks removes OSM bugs regarding turn restriction mapping
+        // which the node-based Tarjan in Landmark preparation can't
+        new PrepareRoutingSubnetworks(graph,
+                Collections.singletonList(new PrepareRoutingSubnetworks.PrepareJob(subnetworkEnc, weighting)))
+                .setMinNetworkSize(minNodeSize).doWork();
     }
 
     @Test
@@ -172,10 +176,12 @@ public class LandmarkStorageTest {
         graph.edge(5, 2).setDistance(10.2).set(speedEnc, 60, 0);
 
         Weighting weighting = new SpeedWeighting(speedEnc);
-        // 1 allowed node => 2 allowed edge keys (exclude 2 and 3 because they are separate too small oneway subnetworks)
+        // 1 allowed node => 2 allowed edge keys (exclude 2 and 3 because they are
+        // separate too small oneway subnetworks)
         subnetworkRemoval(weighting, 1);
 
-        LandmarkStorage storage = new LandmarkStorage(graph, encodingManager, new RAMDirectory(), new LMConfig("car", weighting), 2);
+        LandmarkStorage storage = new LandmarkStorage(graph, encodingManager, new RAMDirectory(),
+                new LMConfig("car", weighting), 2);
         storage.setMinimumNodes(2);
         storage.createLandmarks();
 
@@ -186,7 +192,8 @@ public class LandmarkStorageTest {
 
     @Test
     public void testWeightingConsistence1() {
-        // create an indifferent problem: shortest weighting can pass the speed==0 edge but fastest cannot (?)
+        // create an indifferent problem: shortest weighting can pass the speed==0 edge
+        // but fastest cannot (?)
         // 0--1-2--3
         graph.edge(0, 1).setDistance(10.1).set(speedEnc, 0, 0);
         graph.edge(1, 2).setDistance(10).set(speedEnc, 30, 30);
@@ -240,4 +247,92 @@ public class LandmarkStorageTest {
         storage.createLandmarks();
         assertEquals(3, storage.getSubnetworksWithLandmarks());
     }
+
+    @Test
+    public void testSetMaximumWeightBoundaryConditions() {
+        LandmarkStorage storage = new LandmarkStorage(graph, encodingManager, new RAMDirectory(),
+                new LMConfig("car", new SpeedWeighting(speedEnc)), 2);
+        double originalFactor = storage.getFactor();
+        storage.setMaximumWeight(0.0);
+        assertEquals(originalFactor, storage.getFactor());
+
+        storage.setMaximumWeight(-1.0);
+        assertEquals(originalFactor, storage.getFactor());
+
+        storage.setMaximumWeight(1.0);
+        assertNotEquals(originalFactor, storage.getFactor());
+        assertEquals(1.0 / LandmarkStorage.PRECISION, storage.getFactor());
+
+        assertDoesNotThrow(() -> storage.setMaximumWeight(Double.NaN),
+                "NaN maximum weight should be ignored");
+
+        assertThrows(IllegalStateException.class, () -> storage.setMaximumWeight(Double.POSITIVE_INFINITY),
+                "Positive infinity maximum weight should throw IllegalStateException");
+
+        assertDoesNotThrow(() -> storage.setMaximumWeight(Double.NEGATIVE_INFINITY),
+                "Negative infinity should be ignored");
+    }
+
+    @Test
+    public void testIsInitializedStateTransitions() {
+        LandmarkStorage storage = new LandmarkStorage(graph, encodingManager, new RAMDirectory(),
+                new LMConfig("car", new SpeedWeighting(speedEnc)), 2);
+
+        assertFalse(storage.isInitialized(), "Storage should not be initialized initially");
+
+        graph.edge(0, 1).set(speedEnc, 60, 60).setDistance(10);
+        graph.edge(1, 2).set(speedEnc, 60, 60).setDistance(10);
+
+        new PrepareRoutingSubnetworks(graph,
+                Collections.singletonList(
+                        new PrepareRoutingSubnetworks.PrepareJob(subnetworkEnc, new SpeedWeighting(speedEnc))))
+                .setMinNetworkSize(2).doWork();
+
+        storage.setMinimumNodes(2);
+        storage.createLandmarks();
+
+        assertTrue(storage.isInitialized(), "Storage should be initialized after createLandmarks()");
+
+        assertThrows(IllegalStateException.class, () -> storage.createLandmarks(),
+                "Second initialization should throw IllegalStateException");
+    }
+
+    @Test
+    public void testGetToWeightInfinityHandling() {
+        Directory dir = new RAMDirectory();
+        graph.edge(0, 1);
+        LandmarkStorage lms = new LandmarkStorage(graph, encodingManager, dir,
+                new LMConfig("car", new SpeedWeighting(speedEnc)), 8).setMaximumWeight(LandmarkStorage.PRECISION);
+        lms.createLandmarks();
+
+        assertTrue(lms.isInfinity(2));
+        assertEquals(LandmarkStorage.SHORT_MAX, lms.getToWeight(0, 0));
+
+        lms.setWeight(2, LandmarkStorage.SHORT_MAX);
+        assertFalse(lms.isInfinity(2));
+        assertEquals(LandmarkStorage.SHORT_MAX, lms.getToWeight(0, 0));
+    }
+
+    @Test
+    public void testGetToWeightPointerArithmetic() {
+        Directory dir = new RAMDirectory();
+        graph.edge(0, 1);
+        graph.edge(1, 2);
+        LandmarkStorage lms = new LandmarkStorage(graph, encodingManager, dir,
+                new LMConfig("car", new SpeedWeighting(speedEnc)), 8).setMaximumWeight(LandmarkStorage.PRECISION);
+        lms.createLandmarks();
+
+        long pointer1 = 34;
+        lms.setWeight(pointer1, 1000);
+        assertEquals(1000, lms.getToWeight(0, 1));
+
+        long pointer2 = 38;
+        lms.setWeight(pointer2, 2000);
+        assertEquals(2000, lms.getToWeight(1, 1));
+
+        long pointer3 = 70;
+        lms.setWeight(pointer3, 3000);
+        assertEquals(3000, lms.getToWeight(1, 2));
+    }
+
 }
