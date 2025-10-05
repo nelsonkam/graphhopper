@@ -33,27 +33,21 @@ L'analyse Python des données JaCoCo a révélé les principales candidates :
 
 ### 2.3 Exécution de Tests de Mutation Comparatifs
 
-Pour valider la sélection, des tests PiTest ont été exécutés sur les deux candidates les plus prometteuses :
+Pour valider la sélection, des tests PiTest ont été exécutés sur les deux classes suivantes :
 
-#### **CustomModelParser** :
-- Score de mutation : **51%** (57 tués sur 111 mutations)
-- Couverture de lignes : 80%
-- Force des tests : 63%
+#### **CHStorage** :
+- Score de mutation : 33% (56 tués sur 170 mutations)
+- Couverture de lignes : 54%
+- Force des tests : 51%
 
 #### **LandmarkStorage** :
 - Score de mutation : **26%** (63 tués sur 244 mutations)
 - Couverture de lignes : 56%
 - Force des tests : 44%
 
-**Décision** : **LandmarkStorage** a été sélectionnée comme candidate principale car :
-- Score de mutation beaucoup plus faible (26% vs 51%)
-- Plus de mutations non couvertes (102 vs 21)
-- Plus de mutations totales (244 vs 111), indiquant une logique plus complexe
-- Multiples types de mutateurs avec 0% de taux de détection 
-
 ## 3. Tests Ajoutés et Justifications
 
-### 3.1 Test 1: `testSetMaximumWeightBoundaryConditions`
+### 3.1 Test 1: `testSetMaximumWeightBoundaryConditions` (classe LandmarkStorage)
 
 **Intention de test** : Tester les conditions limites de la méthode `setMaximumWeight`
 
@@ -76,7 +70,7 @@ storage.setMaximumWeight(1.0);
 storage.setMaximumWeight(Double.NaN);
 
 // Donnée: Infini positif
-// Oracle: Une exceptionest levée
+// Oracle: Une exception est levée
 storage.setMaximumWeight(Double.POSITIVE_INFINITY);
 
 // Donnée: Infini négatif (ignoré)
@@ -94,7 +88,7 @@ storage.setMaximumWeight(Double.NEGATIVE_INFINITY);
 - Vérifications d'égalité dans les tests NaN/Infini
 - Logique de mise à jour conditionnelle du facteur
 
-### 3.2 Test 2: `testIsInitializedStateTransitions`
+### 3.2 Test 2: `testIsInitializedStateTransitions` (classe LandmarkStorage)
 
 **Intention de test** : Tester les transitions d'état de l'initialisation
 
@@ -117,7 +111,7 @@ storage.setMaximumWeight(Double.NEGATIVE_INFINITY);
 - Vérification conditionnelle dans `createLandmarks()`
 - Protection contre la double initialisation
 
-### 3.3 Test 3: `testGetToWeightInfinityHandling`
+### 3.3 Test 3: `testGetToWeightInfinityHandling` (classe LandmarkStorage)
 
 **Intention de test** : Tester la gestion de l'infini dans `getToWeight`
 
@@ -146,7 +140,7 @@ assertEquals(LandmarkStorage.SHORT_MAX, lms.getToWeight(0, 0));
 - Mutations de comparaison : `res == SHORT_INFINITY` (changements d'opérateur ==, !=, etc.)
 - Mutations de retour conditionnel : `return SHORT_MAX` vs `return res`
 
-### 3.4 Test 4: `testGetToWeightPointerArithmetic`
+### 3.4 Test 4: `testGetToWeightPointerArithmetic` (classe LandmarkStorage)
 
 **Intention de test** : Tester la formule arithmétique de calcul de pointeur dans `getToWeight`
 
@@ -190,5 +184,72 @@ assertEquals(3000, lms.getToWeight(1, 2));
   - Tuée par les tests avec valeurs multiples non-nulles
   - Exemple: Si `34 + 4` devient `34 - 4`, le pointeur devient 30 au lieu de 38
 
+### 3.5 Test 5: `testCreateWithNegativeNodes` (classe CHStorage)
+
+**Intention de test** : Tester les conditions limites de la méthode `create`
+
+**Conditions Testées** :
+```java
+// Donnée: Valeur négative
+// Oracle: Une exception est levée
+store.create(-30, 5);
+```
+
+**Justification** :
+- Cible les mutations "changed conditional boundary" sur `nodes < 0`
+- Vérifie le comportement avec les valeurs extrêmes
+
+**Mutations Tuées** :
+- Conditions de limite mutées (< vs <=)
+- Suppression du bloc else : if (cond) { ... } else { ... } → if (cond) { ... }
+
+### 3.6 Test 6: `testUniqueCreation` (classe CHStorage)
+
+**Intention de test** : Tester l'existence d'un unique storage
+
+**Conditions Testées** :
+Donnée : Deux appels consécutifs de la fonction create sur la même instance de storage
+Oracle : Une exception devrait être levée
+
+**Justification** :
+- Teste la mise à jour effective de la valeur `nodeCount`
+- Teste la condition `nodeCount >= 0`
+
+**Mutations Tuées** :
+- Conditions de limite mutées (> vs >=)
+- Suppression du bloc else : if (cond) { ... } else { ... } → if (cond) { ... }
+
+### 3.7 Test 7: `testLimitValuesWeightFromDouble` (classe CHStorage)
+
+**Intention de test** : Tester les conditions limites de la méthode `weightFromDouble`
+
+**Conditions Testées** :
+```java
+// Donnée: Poids négatif
+// Oracle: Une exception est levée
+store.publicWeightFromDouble(-1);
+
+// Donnée: Poids positif mais inférieur à la limite minimale
+// Oracle: La valeur donnée ets ignorée et la valeur 1 est retournée
+store.publicWeightFromDouble(0.000001);
+
+// Donnée: Poids positif mais infini et donc supérieur à la valeur maximale
+// Oracle: Le valeur est ignorée et la méthode retourne -2. Elle augmente le compteur des
+// shortcuts dépassant le poids maximal
+store.publicWeightFromDouble(Double.POSITIVE_INFINITY);
+```
+
+**Justification** :
+- Cible les mutations "changed conditional boundary" sur `weight < 0`, `weight < MIN_WEIGHT` et `weight >= MAX_WEIGHT`
+- Teste les restrictions sur la valeur de weight
+- Vérifie le comportement avec les valeurs extrêmes
+
+**Mutations Tuées** :
+- Conditions de limite mutées (< vs <=, > vs >=)
+- Tests couvrant la suppression du bloc else
+- Tests couvrant davantage de retours de valeurs primitives.
+- Tests couvrant plus de calculs et opérations mathématiques.
+
+## 4. Test avec java-faker
 
 
