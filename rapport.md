@@ -33,7 +33,8 @@ L'analyse Python des données JaCoCo a révélé les principales candidates :
 
 ### 2.3 Exécution de Tests de Mutation Comparatifs
 
-Pour valider la sélection, des tests PiTest ont été exécutés sur les deux classes suivantes :
+Pour valider la sélection, des tests PiTest ont été exécutés sur deux classes jugées intéressantes. 
+Les métriques initiales sont les suivantes :
 
 #### **CHStorage** :
 - Score de mutation : 33% (56 tués sur 170 mutations)
@@ -44,6 +45,8 @@ Pour valider la sélection, des tests PiTest ont été exécutés sur les deux c
 - Score de mutation : **26%** (63 tués sur 244 mutations)
 - Couverture de lignes : 56%
 - Force des tests : 44%
+
+Nous avons ensuite ajoutés nos tests pour tuer certaines mutations.
 
 ## 3. Tests Ajoutés et Justifications
 
