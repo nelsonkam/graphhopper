@@ -100,11 +100,15 @@ storage.setMaximumWeight(Double.NEGATIVE_INFINITY);
 
 **Scénario Testé** :
 1.  Donnée: Une nouvelle instance de `LandmarkStorage`
+
     Oracle: `isInitialized()` retourne `false` car l'instance n'est pas encore initialisée
 2.  Donnée: Mise à jour du graphe de l'instance
+
     Action: Appel de `createLandmarks()`
+
     Oracle: `isInitialized()` retourne `true` car `createLandmarks()` intialise l'instance
-3.  Action: Deuxiéme appel de `createLandMarks()`
+3.  Action: Deuxième appel de `createLandMarks()`
+
     Oracle: Exception levée en raison de la double initialisation
 
 **Justification** :
@@ -214,8 +218,9 @@ store.create(-30, 5);
 **Intention de test** : Tester l'existence d'un unique storage
 
 **Conditions Testées** :
-Donnée : Deux appels consécutifs de la fonction create sur la même instance de storage
-Oracle : Une exception devrait être levée
+1. Donnée : Deux appels consécutifs de la fonction create sur la même instance de storage
+
+   Oracle : Une exception devrait être levée
 
 **Justification** :
 - Teste la mise à jour effective de la valeur `nodeCount`
