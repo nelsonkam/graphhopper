@@ -47,7 +47,13 @@ Pour valider la sélection, des tests PiTest ont été exécutés sur les deux c
 
 ## 3. Tests Ajoutés et Justifications
 
-### 3.1 Test 1: `testSetMaximumWeightBoundaryConditions` (classe LandmarkStorage)
+[Voir les tests LandmarkStorageTest](core/src/test/java/com/graphhopper/routing/lm/LandmarkStorageTest.java)
+[Voir les tests CHStorageTest](core/src/test/java/com/graphhopper/storage/CHStorageTest.java)
+
+Chaque titre de test contient un lien vers la ligne exacte du test mais cette option est seulement 
+accessible depuis github.
+
+### 3.1 [Test 1](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/routing/lm/LandmarkStorageTest.java#L251): `testSetMaximumWeightBoundaryConditions` (classe LandmarkStorage)
 
 **Intention de test** : Tester les conditions limites de la méthode `setMaximumWeight`
 
@@ -88,7 +94,7 @@ storage.setMaximumWeight(Double.NEGATIVE_INFINITY);
 - Vérifications d'égalité dans les tests NaN/Infini
 - Logique de mise à jour conditionnelle du facteur
 
-### 3.2 Test 2: `testIsInitializedStateTransitions` (classe LandmarkStorage)
+### 3.2 [Test 2](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/routing/lm/LandmarkStorageTest.java#L276): `testIsInitializedStateTransitions` (classe LandmarkStorage)
 
 **Intention de test** : Tester les transitions d'état de l'initialisation
 
@@ -111,7 +117,7 @@ storage.setMaximumWeight(Double.NEGATIVE_INFINITY);
 - Vérification conditionnelle dans `createLandmarks()`
 - Protection contre la double initialisation
 
-### 3.3 Test 3: `testGetToWeightInfinityHandling` (classe LandmarkStorage)
+### 3.3 [Test 3](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/routing/lm/LandmarkStorageTest.java#L300): `testGetToWeightInfinityHandling` (classe LandmarkStorage)
 
 **Intention de test** : Tester la gestion de l'infini dans `getToWeight`
 
@@ -140,7 +146,7 @@ assertEquals(LandmarkStorage.SHORT_MAX, lms.getToWeight(0, 0));
 - Mutations de comparaison : `res == SHORT_INFINITY` (changements d'opérateur ==, !=, etc.)
 - Mutations de retour conditionnel : `return SHORT_MAX` vs `return res`
 
-### 3.4 Test 4: `testGetToWeightPointerArithmetic` (classe LandmarkStorage)
+### 3.4 [Test 4](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/routing/lm/LandmarkStorageTest.java#L316): `testGetToWeightPointerArithmetic` (classe LandmarkStorage)
 
 **Intention de test** : Tester la formule arithmétique de calcul de pointeur dans `getToWeight`
 
@@ -184,7 +190,7 @@ assertEquals(3000, lms.getToWeight(1, 2));
   - Tuée par les tests avec valeurs multiples non-nulles
   - Exemple: Si `34 + 4` devient `34 - 4`, le pointeur devient 30 au lieu de 38
 
-### 3.5 Test 5: `testCreateWithNegativeNodes` (classe CHStorage)
+### 3.5 [Test 5](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/storage/CHStorageTest.java#L88): `testCreateWithNegativeNodes` (classe CHStorage)
 
 **Intention de test** : Tester les conditions limites de la méthode `create`
 
@@ -203,7 +209,7 @@ store.create(-30, 5);
 - Conditions de limite mutées (< vs <=)
 - Suppression du bloc else : if (cond) { ... } else { ... } → if (cond) { ... }
 
-### 3.6 Test 6: `testUniqueCreation` (classe CHStorage)
+### 3.6 [Test 6](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/storage/CHStorageTest.java#L99): `testUniqueCreation` (classe CHStorage)
 
 **Intention de test** : Tester l'existence d'un unique storage
 
@@ -219,7 +225,7 @@ Oracle : Une exception devrait être levée
 - Conditions de limite mutées (> vs >=)
 - Suppression du bloc else : if (cond) { ... } else { ... } → if (cond) { ... }
 
-### 3.7 Test 7: `testLimitValuesWeightFromDouble` (classe CHStorage)
+### 3.7 [Test 7](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/storage/CHStorageTest.java#L111): `testLimitValuesWeightFromDouble` (classe CHStorage)
 
 **Intention de test** : Tester les conditions limites de la méthode `weightFromDouble`
 
