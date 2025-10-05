@@ -19,6 +19,7 @@
 package com.graphhopper.util;
 
 import com.carrotsearch.hppc.IntArrayList;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -177,5 +178,21 @@ class ArrayUtilTest {
         int[] a = {2, 6, 8, 12, 15};
         int[] b = {3, 7, 9, 10, 11, 12, 15, 20, 21, 26};
         assertEquals(from(2, 3, 6, 7, 8, 9, 10, 11, 12, 15, 20, 21, 26), from(ArrayUtil.merge(a, b)));
+    }
+
+    @Test
+    public void testZero() {
+        Faker faker = new Faker();
+        int size = faker.number().numberBetween(0, 20);
+        IntArrayList tab = ArrayUtil.zero(size);
+        boolean isNotZero = false;
+        for (int i = 0; i < size; i++) {
+            if (tab.get(i) != 0) {
+                isNotZero = true;
+                break;
+            }
+        }
+
+        assertFalse(isNotZero);
     }
 }
