@@ -1,11 +1,12 @@
-# Rapport d'Amélioration de la Couverture de Mutation avec PiTest
-## Analyse et Optimisation de la Classe LandmarkStorage
+# Rapport de la tâche 2 : Amélioration de la Couverture de Mutation avec PiTest et Utilisation de Java-Faker
 
 ---
 
+## Analyse et Optimisation de la Classe LandmarkStorage et de la classe CHStorage
+
 ## 1. Introduction
 
-Ce rapport documente le processus d'amélioration de la couverture de tests de mutation pour la bibliothèque GraphHopper Core. L'objectif était d'identifier une classe avec un potentiel d'amélioration significatif et d'ajouter 4 cas de test stratégiques pour augmenter le score de mutation PiTest.
+Ce rapport documente le processus d'amélioration de la couverture de tests de mutation pour la bibliothèque GraphHopper Core. L'objectif était d'identifier une à trois classes avec un potentiel d'amélioration significatif et d'ajouter 7 cas de test stratégiques pour augmenter le score de mutation PiTest.
 
 Le test de mutation est une technique d'évaluation de la qualité des tests qui introduit des modifications artificielles (mutations) dans le code source et vérifie si les tests existants détectent ces changements. Un score de mutation élevé indique des tests robustes capables de détecter les bugs potentiels.
 
@@ -37,7 +38,7 @@ Pour valider la sélection, des tests PiTest ont été exécutés sur deux class
 Les métriques initiales sont les suivantes :
 
 #### **CHStorage** :
-- Score de mutation : 33% (56 tués sur 170 mutations)
+- Score de mutation : **33%** (56 tués sur 170 mutations)
 - Couverture de lignes : 54%
 - Force des tests : 51%
 
@@ -54,8 +55,7 @@ Nous avons ensuite ajoutés nos tests pour tuer certaines mutations.
 
 [Voir les tests CHStorageTest](core/src/test/java/com/graphhopper/storage/CHStorageTest.java)
 
-Chaque titre de test contient un lien vers la ligne exacte du test mais cette option est seulement 
-accessible depuis github.
+Chaque titre de test contient un lien vers la ligne exacte du test sur github.
 
 ### 3.1 [Test 1](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/routing/lm/LandmarkStorageTest.java#L251): `testSetMaximumWeightBoundaryConditions` (méthode setMaximumWeight de la classe LandmarkStorage)
 
@@ -265,7 +265,25 @@ store.publicWeightFromDouble(Double.POSITIVE_INFINITY);
 - Tests couvrant davantage de retours de valeurs primitives.
 - Tests couvrant plus de calculs et opérations mathématiques.
 
-## 4. Test avec java-faker
+## 4. Résultats des nouveaux tests sur le score de mutation
+
+Les tests ajoutés ont permis de tuer de nouvelles mutations et d'améliorer ainsi la sécurité des classes.
+Les nouveaux résulats sont les suivants : 
+
+#### **CHStorage** :
+- Score de mutation : **37%** (63 tués sur 171 mutations)
+- Couverture de lignes : 57%
+- Force des tests : 56%
+
+#### **LandmarkStorage** :
+- Score de mutation : **32%** (77 tués sur 244 mutations)
+- Couverture de lignes : 58%
+- Force des tests : 51%
+
+
+---
+
+## Test avec Java-Faker
 
 [Lien vers la classe de test](core/src/test/java/com/graphhopper/util/ArrayUtilTest.java)
 
