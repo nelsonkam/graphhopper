@@ -154,6 +154,8 @@ class CHStorageTest {
         IllegalStateException ex = assertThrows(IllegalStateException.class,
                 () -> {CHStorage.fromGraph(baseGraphMock, chConfigMock);});
 
+        verify(chConfigMock).getName();
+        verify(chConfigMock).isEdgeBased();
         verify(baseGraphMock).isFrozen();
         assertEquals("graph must be frozen before we can create ch graphs", ex.getMessage());
     }
