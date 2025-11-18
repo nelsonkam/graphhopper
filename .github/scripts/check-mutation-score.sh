@@ -14,9 +14,13 @@ NC='\033[0m' # No Color
 # Fonction pour exécuter les tests de mutation
 run_mutation_tests() {
     echo "Exécution des tests de mutation PIT..."
-    # Compiler et préparer l'environnement sans réexécuter tous les tests
-    # PIT exécutera les tests nécessaires pour chaque mutation
-    mvn test-compile -pl core
+    # Réutilise la compilation du job build si core/target/classes est présent
+    # if [ -d "core/target/classes" ] && [ -d "core/target/test-classes" ]; then
+    #     echo "Réutilisation des classes compilées depuis le job build."
+    # else
+    #     echo "Compilation du module core (classes manquantes)."
+    #     mvn test-compile -pl core
+    # fi
     # Exécuter PIT
     mvn org.pitest:pitest-maven:mutationCoverage -pl core -DwithHistory=false
 }
