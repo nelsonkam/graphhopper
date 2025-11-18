@@ -102,8 +102,7 @@ jobs:
           if [ -f baseline/mutations.xml ]; then
             .github/scripts/check-mutation-score.sh compare baseline/mutations.xml
           else
-            echo "⚠️  Aucun baseline trouvé sur master. Premier build?"
-            echo "✅ Acceptation du score actuel."
+            echo "⚠️  Aucun baseline trouvé sur master."
           fi
 
       # Uploader le rapport pour consultation
