@@ -36,13 +36,6 @@ jobs:
             ${{ runner.os}}-node_modules-
       - name: Build ${{ matrix.java-version }}
         run: mvn -B clean test
-      - name: Upload core build output
-        if: matrix.java-version == '24'
-        uses: actions/upload-artifact@v4
-        with:
-          name: core-target-build
-          path: core/target
-          retention-days: 3
 
   mutation-testing:
     runs-on: ubuntu-latest
@@ -53,12 +46,6 @@ jobs:
         with:
           java-version: 24
           distribution: temurin
-      - name: Download build output from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: core-target-build
-          path: core
-          if-no-artifact-found: warn
       - name: Cache Maven artifacts
         uses: actions/cache@v4
         with:
@@ -66,6 +53,22 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+      - name: Cache node
+        uses: actions/cache@v4
+        with:
+          path: web-bundle/node
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os}}-node-
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: web-bundle/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os}}-node_modules-
+      - name: Clean install project (dependencies for PIT)
+        run: mvn -B clean install -DskipTests
 
       # Télécharger le baseline depuis master (seulement pour les branches non-master)
       - name: Download baseline from master
