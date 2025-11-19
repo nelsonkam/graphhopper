@@ -241,6 +241,12 @@
                             <mutator>DEFAULTS</mutator>
                         </mutators>
                         <timestampedReports>false</timestampedReports>
+                        <threads>2</threads> 
+                        <timeoutConstant>8000</timeoutConstant>
+                        <timeoutFactor>2.0</timeoutFactor>
+                        <jvmArgs>
+                            <param>-Xmx3g</param>
+                        </jvmArgs>
                     </configuration>
                 </plugin>
             </plugins>
