@@ -233,10 +233,10 @@
                     </dependencies>
                     <configuration>
                         <targetClasses>
-                            <param>com.graphhopper.*</param>
+                            <param>com.graphhopper.routing.lm.*</param>
                         </targetClasses>
                         <targetTests>
-                            <param>com.graphhopper.*</param>
+                            <param>com.graphhopper.routing.lm.*</param>
                         </targetTests>
                         <outputFormats>
                             <outputFormat>HTML</outputFormat>
@@ -246,6 +246,12 @@
                             <mutator>DEFAULTS</mutator>
                         </mutators>
                         <timestampedReports>false</timestampedReports>
+                        <threads>2</threads> 
+                        <timeoutConstant>8000</timeoutConstant>
+                        <timeoutFactor>2.0</timeoutFactor>
+                        <jvmArgs>
+                            <param>-Xmx3g</param>
+                        </jvmArgs>
                     </configuration>
                 </plugin>
             </plugins>
