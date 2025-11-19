@@ -228,10 +228,10 @@
                     </dependencies>
                     <configuration>
                         <targetClasses>
-                            <param>com.graphhopper.*</param>
+                            <param>com.graphhopper.routing.*</param>
                         </targetClasses>
                         <targetTests>
-                            <param>com.graphhopper.*</param>
+                            <param>com.graphhopper.routing.*</param>
                         </targetTests>
                         <outputFormats>
                             <outputFormat>HTML</outputFormat>
