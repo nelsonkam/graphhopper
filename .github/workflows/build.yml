@@ -54,6 +54,7 @@ jobs:
     needs: build
     if: ${{ needs.build.outputs.testFailed == 'true' }}
     steps:
+      - uses: actions/checkout@v4
       - name: Rickroll on test fail
         uses: ./.github/actions/rickroll
 
