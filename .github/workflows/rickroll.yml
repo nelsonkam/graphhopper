@@ -1,0 +1,11 @@
+name: Rickroll
+
+on:
+  workflow_call:
+
+jobs:
+  rickroll:
+    runs-on: ubuntu-latest
+    steps:
+      - name: rick roll part
+        run : echo "Regardez ce lien pour plus de détails -- https://www.youtube.com/watch?v=dQw4w9WgXcQ --"
