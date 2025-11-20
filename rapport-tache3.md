@@ -4,7 +4,39 @@
 
 ## Intégration du score de mutation au workflow Github Actions
 
+### Architecture
+1. **Séparation des jobs** – `build` (tests rapides) et `mutation-testing` (PIT) s'exécutent en parallèle. 
+2. **Baseline via artifacts** – `master` publie `core/target/pit-reports/mutations.xml`; les autres branches téléchargent ce baseline et comparent les scores.
+3. **Installation propre avant PIT** – `mvn -B clean install -DskipTests` garantit que `graphhopper-web-api` et les dépendances locales sont disponibles dans le job mutation
+4. **JDK 21 pour mutation-testing** – Pitest ne gère que les bytecodes jusqu’à JDK 21 ; nous avons donc choisi cette version pour éviter l’erreur `Unsupported class file major version 68`.
 
+
+## Validation
+- **CI** : Nous exécutons le pipeline complet (`build` → `mutation-testing`) et nous le considérons réussi si le score reste au moins égal à la baseline (master).
+- **Tests locaux** : Nous reproduisons le workflow avec `mvn -B clean install -DskipTests`, puis `.github/scripts/mutation-score.sh run` localement, afin de s'assurer que les scripts fonctionnent correctement.
+- **Rapports PIT** : Nous vérifions les artifacts `mutation-report-<sha>` pour confirmer que `index.html` et `mutations.xml` sont bien générés.
+
+### Fonctionnement du workflow 
+
+#### Job `mutation-testing` (exécution indépendante)
+1. JDK 21 (Temurin) + caches Maven/Node/`node_modules`.
+2. `mvn -B clean install -DskipTests` pour préparer les dépendances.
+3. Télécharge le baseline `mutations.xml` depuis `master` (artifact `mutation-baseline`) sur les branches non‑master.
+4. Exécute `.github/scripts/check-mutation-score.sh run` (PIT `mutationCoverage` sur `core`, sans historique).
+5. Sur **master**, publie le nouveau baseline (`core/target/pit-reports/mutations.xml`, rétention 90 j).
+6. Sur les autres branches, compare au baseline via `.github/scripts/check-mutation-score.sh compare baseline/mutations.xml` quand disponible.
+7. Publie toujours le rapport PIT (`mutation-report-<sha>`, rétention 30 jours).
+
+### Retours d'expérience
+- Réutiliser un `core/target` téléchargé économise du temps mais fragilise la résolution des dépendances ; reconstruire localement est plus fiable sur CI partagée.
+- PIT est sensible aux versions de bytecode : il faut aligner la JVM sur la version supportée par ASM.
+- **Performance et ressources** : Les tests PIT sont lents et consomment beaucoup de ressources (mémoire, CPU), ce qui a nécessité de réduire le scope avec `targetClasses` pour rester dans les limites des runners GitHub. Nous avons tenté de pallier ce problème avec `scmMutationCoverage` pour ne tester que les fichiers modifiés, mais n'avons pas réussi à le configurer correctement pour que PIT détecte les changements dans le contexte CI.
+
+### Améliorations futures envisagées
+- Exécuter PIT sur un runner plus grand (GitHub hosted « large » ou self-hosted) pour lever les warnings TIMED_OUT/MEMORY_ERROR sur master.
+- Ajouter un commentaire automatique sur les PRs avec le score courant vs baseline et lien vers le rapport HTML.
+- Activer des mutateurs supplémentaires (au-delà de DEFAULTS) pour améliorer la qualité des tests.
+- Implémenter un seuil minimum de couverture de mutation pour les nouveaux fichiers ajoutés dans les PRs.
 
 
 ## Tests avec classe mockées
