@@ -4,6 +4,8 @@
 
 ## Intégration du score de mutation au workflow Github Actions
 
+Pour cette partie nous avions modifier le workflow Github Actions pour fail le build si le score de mutation baisse après le commit. Voici les étapes que nous avons suivie :
+
 ### Architecture
 1. **Séparation des jobs** – `build` (tests rapides) et `mutation-testing` (PIT) s'exécutent en parallèle. 
 2. **Baseline via artifacts** – `master` publie `core/target/pit-reports/mutations.xml`; les autres branches téléchargent ce baseline et comparent les scores.
@@ -11,7 +13,7 @@
 4. **JDK 21 pour mutation-testing** – Pitest ne gère que les bytecodes jusqu’à JDK 21 ; nous avons donc choisi cette version pour éviter l’erreur `Unsupported class file major version 68`.
 
 
-## Validation
+### Validation
 - **CI** : Nous exécutons le pipeline complet (`build` → `mutation-testing`) et nous le considérons réussi si le score reste au moins égal à la baseline (master).
 - **Tests locaux** : Nous reproduisons le workflow avec `mvn -B clean install -DskipTests`, puis `.github/scripts/mutation-score.sh run` localement, afin de s'assurer que les scripts fonctionnent correctement.
 - **Rapports PIT** : Nous vérifions les artifacts `mutation-report-<sha>` pour confirmer que `index.html` et `mutations.xml` sont bien générés.
