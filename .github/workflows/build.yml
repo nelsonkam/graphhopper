@@ -3,6 +3,8 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      testFailed: ${{ steps.set-result.outputs.testFailed }}
     strategy:
       fail-fast: false
       matrix:
