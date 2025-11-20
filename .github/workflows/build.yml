@@ -58,6 +58,6 @@ jobs:
     if: ${{ needs.build.outputs.testFailed == 'true' }}
     steps:
       - name: Rickroll on test fail
-        uses: ./.github/workflows/rickroll.yml@${{ github.ref_name }}
+        uses: ./.github/workflows/rickroll.yml@josh-tache2
 
 
