@@ -48,6 +48,9 @@ jobs:
            else
              echo "testFailed=false" >> $GITHUB_OUTPUT
            fi
+      - name: Fail job if tests failed
+        if: ${{ steps.set-result.outputs.testFailed == 'true' }}
+        run: exit 1
 
   rickroll:
     runs-on: ubuntu-latest
@@ -55,6 +58,6 @@ jobs:
     if: ${{ needs.build.outputs.testFailed == 'true' }}
     steps:
       - name: Rickroll on test fail
-        uses: ./.github/workflows/rickroll.yml
+        uses: ./.github/workflows/rickroll.yml@${{ github.ref_name }}
 
 
