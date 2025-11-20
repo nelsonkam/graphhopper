@@ -160,8 +160,8 @@ class CHStorageTest {
         assertEquals("graph must be frozen before we can create ch graphs", ex.getMessage());
     }
 
-//    @Test
-//    public void alwaysFailingTest() {
-//        fail();
-//    }
+    @Test
+    public void alwaysFailingTest() {
+        fail();
+    }
 }
