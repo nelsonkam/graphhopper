@@ -37,3 +37,14 @@ jobs:
       - name: Build ${{ matrix.java-version }}
         run: mvn -B clean test
 
+  on-failure:
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: rick roll part
+        uses: TejasvOnly/random-rickroll@v1.0
+        with:
+          percentage: 100
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
