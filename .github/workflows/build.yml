@@ -64,6 +64,6 @@ jobs:
     if: ${{ needs.build.outputs.testFailed == 'true' }}
     steps:
       - name: Mark workflow as failed
-        run: exit 1
+        run: echo "The tests failed" && exit 1
 
 
