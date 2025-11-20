@@ -39,4 +39,4 @@ pour nous prévenir que la création n'est possible que pour les graphes `frozen
 
 Cette partie nécessitait d'intoduire un élément d'humour, notamment en lien avec le `rickroll` dans le pipeline de CI. Pour ce faire, nous avons créé une action réutilisable dans le fichier [rickroll.yml](.github/actions/rickroll/action.yml) puis ajouté le déclenchement
 de cette github action dans [build.yml](.github/workflows/build.yml) lorsque l'étape de test échoue.
-Pour le tester, nous avons écrit un test qui fail tout le temps que nous avons commenté. Vous pouvez le retrouver [ici]((https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/storage/CHStorageTest.java#L163)).
+Pour le tester, nous avons écrit un test qui fail tout le temps que nous avons commenté. Vous pouvez le retrouver [ici](https://github.com/nelsonkam/graphhopper/blob/master/core/src/test/java/com/graphhopper/storage/CHStorageTest.java#L163).
