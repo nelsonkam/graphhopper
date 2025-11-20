@@ -43,8 +43,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: rick roll part
-        uses: TejasvOnly/random-rickroll@v1.0
-        with:
-          percentage: 100
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run : echo "![rickroll](https://user-images.githubusercontent.com/37572049/90699500-0cc3ec00-e2a1-11ea-8d13-989526e86b0e.gif)"
 
