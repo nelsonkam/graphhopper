@@ -6,7 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        java-version: [ 24, 25-ea ]
     steps:
       - name: Récupération du code de la branche main
         uses: actions/checkout@v4
