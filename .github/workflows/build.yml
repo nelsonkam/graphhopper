@@ -49,24 +49,6 @@ jobs:
              echo "testFailed=false" >> $GITHUB_OUTPUT
            fi
 
-  rickroll:
-    runs-on: ubuntu-latest
-    needs: build
-    if: ${{ needs.build.outputs.testFailed == 'true' }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Rickroll on test fail
-        uses: ./.github/actions/rickroll
-
-  fail-workflow-correctly:
-    runs-on: ubuntu-latest
-    needs: build
-    if: ${{ needs.build.outputs.testFailed == 'true' }}
-    steps:
-      - name: Mark workflow as failed
-        run: echo "The tests failed" && exit 1
-
-
   mutation-testing:
     runs-on: ubuntu-latest
     # needs: build
@@ -143,3 +125,23 @@ jobs:
           name: mutation-report-${{ github.sha }}
           path: core/target/pit-reports/
           retention-days: 30
+
+
+  rickroll:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ needs.build.outputs.testFailed == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rickroll on test fail
+        uses: ./.github/actions/rickroll
+
+  fail-workflow-correctly:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ needs.build.outputs.testFailed == 'true' }}
+    steps:
+      - name: Mark workflow as failed
+        run: echo "The tests failed" && exit 1
+
+
