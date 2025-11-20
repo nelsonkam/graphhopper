@@ -3,6 +3,8 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      testFailed: ${{ steps.set-result.outputs.testFailed }}
     strategy:
       fail-fast: false
       matrix:
@@ -35,7 +37,35 @@ jobs:
           restore-keys: |
             ${{ runner.os}}-node_modules-
       - name: Build ${{ matrix.java-version }}
+        id: test
         run: mvn -B clean test
+        continue-on-error: true
+      - name: Set test result
+        id: set-result
+        run: |
+           if [[ "${{ steps.test.outcome }}" == "failure" ]]; then
+             echo "testFailed=true" >> $GITHUB_OUTPUT
+           else
+             echo "testFailed=false" >> $GITHUB_OUTPUT
+           fi
+
+  rickroll:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ needs.build.outputs.testFailed == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rickroll on test fail
+        uses: ./.github/actions/rickroll
+
+  fail-workflow-correctly:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ needs.build.outputs.testFailed == 'true' }}
+    steps:
+      - name: Mark workflow as failed
+        run: echo "The tests failed" && exit 1
+
 
   mutation-testing:
     runs-on: ubuntu-latest

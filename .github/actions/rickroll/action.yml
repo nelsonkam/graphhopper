@@ -1,0 +1,10 @@
+name: "Rickroll"
+description: "Affiche un message quand les tests échouent"
+runs:
+  using: "composite"
+  steps:
+    - name: Rickroll
+      shell: bash
+      run: |
+        echo "Tests FAILED!"
+        echo "Regardez ceci pour comprendre les détails : https://www.youtube.com/watch?v=dQw4w9WgXcQ"

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class CHStorageTest {
 
@@ -122,5 +123,45 @@ class CHStorageTest {
         assertEquals(1, store.publicWeightFromDouble(0.000001));
         assertEquals(-2, store.publicWeightFromDouble(Double.POSITIVE_INFINITY));
         assertEquals(numShortcutsExceedingWeight + 1, store.getNumShortcutsExceedingWeight());
+    }
+
+
+    @Test
+    public void testCreationWithDirectory() {
+        Directory dirMock = mock(Directory.class);
+
+        when(dirMock.create()).thenReturn(null);
+        when(dirMock.getDefaultType()).thenReturn(null);
+
+        CHStorage testStorage = new CHStorage(dirMock, "ch1", -1, false);
+
+        verify(dirMock).create("nodes_ch_ch1", null, -1);
+        verify(dirMock).getDefaultType("nodes_ch_ch1", true);
+        verify(dirMock).create("shortcuts_ch1", null, -1);
+        verify(dirMock).getDefaultType("shortcuts_ch1", true);
+    }
+
+    @Test
+    public void testCHStorageCreationFromUnfrozenGraph() {
+        BaseGraph baseGraphMock = mock(BaseGraph.class);
+        CHConfig chConfigMock = mock(CHConfig.class);
+
+        when(baseGraphMock.isFrozen()).thenReturn(false);
+
+        when(chConfigMock.getName()).thenReturn("ch1");
+        when(chConfigMock.isEdgeBased()).thenReturn(false);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> {CHStorage.fromGraph(baseGraphMock, chConfigMock);});
+
+        verify(chConfigMock).getName();
+        verify(chConfigMock).isEdgeBased();
+        verify(baseGraphMock).isFrozen();
+        assertEquals("graph must be frozen before we can create ch graphs", ex.getMessage());
+    }
+
+    @Test
+    public void alwaysFailingTest() {
+        fail();
     }
 }
