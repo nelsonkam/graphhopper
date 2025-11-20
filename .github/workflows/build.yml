@@ -55,7 +55,7 @@ jobs:
     if: ${{ needs.build.outputs.testFailed == 'true' }}
     steps:
       - name: Rickroll on test fail
-        uses: ./.github/workflows/rickroll.yml
+        uses: ./.github/actions/rickroll
 
   fail-workflow-correctly:
     runs-on: ubuntu-latest
